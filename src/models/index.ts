@@ -1,6 +1,6 @@
 // database.ts
 import { Sequelize } from 'sequelize';
-import config from './config';
+import config from '../config/config';
 
 const { dialect, host, username, password, database } = config.db;
 

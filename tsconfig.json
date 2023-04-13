@@ -8,7 +8,10 @@
       "types": ["jsonwebtoken"],
       "sourceMap": true
     },
-    "include": ["src/**/*","index.ts"],
+    "include": [
+      "src/**/*.ts",
+      "node_modules/sequelize/types/*.d.ts",
+      "index.ts"],
     "exclude": ["node_modules"]
   }
   
