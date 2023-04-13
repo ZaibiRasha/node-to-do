@@ -12,9 +12,9 @@ interface Config {
 
 const config: Config = {
   db: {
-    host: process.env.DB_HOST?process.env.DB_HOST:"",
-    database: process.env.DB_NAME?process.env.DB_NAME:"",
-    username: process.env.DB_USER?process.env.DB_USER:"",
+    host: process.env.DB_HOST?process.env.DB_HOST:"localhost",
+    database: process.env.DB_NAME?process.env.DB_NAME:"todo",
+    username: process.env.DB_USER?process.env.DB_USER:"root",
     password: process.env.DB_PASS?process.env.DB_PASS:"",
     dialect: 'mysql',
     }

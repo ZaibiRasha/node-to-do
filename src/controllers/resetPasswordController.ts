@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import User from '../models/User';
+import {User} from '../models/user.model';
 
 export const resetPassword = async (req: Request, res: Response) => {
   const { resetToken, password } = req.body;

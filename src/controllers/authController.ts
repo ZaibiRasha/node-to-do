@@ -1,100 +1,53 @@
-import { Request, Response } from 'express';
-import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
-import  User  from '../models/User';
-import { validationResult } from 'express-validator';
-
+import bcrypt from "bcrypt";
+import { User } from "../models/user.model";
 export const register = async (req: Request, res: Response) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(422).json({ errors: errors.array() });
-  }
-
-  const { name, email, password } = req.body;
-
   try {
-    let user = await User.findOne({ where: { email } });
+  const { name, password, email} = req.body;
+  
+  
 
-    if (user) {
-      return res.status(400).json({ msg: 'User already exists' });
-    }
-
-    user = new User({ name, email, password });
-
-    const salt = await bcrypt.genSalt(10);
-    user.password = await bcrypt.hash(password, salt);
-
-    await user.save();
-
-    const payload = {
-      user: { id: user.id },
-    };
-
-    jwt.sign(
-      payload,
-      process.env.JWT_SECRET as string,
-      { expiresIn: '1h' },
-      (err: Error | null, token) => {
-        if (err) throw err;
-        res.json({ token });
-      }
-    );
-  } catch (err: any) {
-    console.error(err.message);
-    res.status(500).send('Server error');
+  const user = await User.findOne({ where: { email: email } });
+  if (user) {
+    return res.status(401).send({ message:"EMAIL_EXISTS"});
   }
+  User.create({
+    name: name,
+    email: email,
+    password:password
+  })
+} catch (error) {
+  res.status(500).send({ success: false, message: "MSG.SQL_ERROR" });
+}
 };
 
 export const login = async (req: Request, res: Response) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(422).json({ errors: errors.array() });
-  }
-
   const { email, password } = req.body;
 
-  try {
-    const user = await User.findOne({ where: { email } });
+  // Find the user in the database
+  const user = await User.findOne({ where: { email } });
 
-    if (!user) {
-      return res.status(400).json({ msg: 'Invalid Credentials' });
-    }
-
-    const isMatch = await bcrypt.compare(password, user.password);
-
-    if (!isMatch) {
-      return res.status(400).json({ msg: 'Invalid Credentials' });
-    }
-
-    const payload = {
-      user: { id: user.id },
-    };
-
-    jwt.sign(
-      payload,
-      process.env.JWT_SECRET as string,
-      { expiresIn: '1h' },
-      (err: Error | null, token) => {
-        if (err) throw err;
-        res.json({ token });
-      }
-    );
-  } catch (err: any) {
-    console.error(err.message);
-    res.status(500).send('Server error');
+  if (!user) {
+    return res.status(400).json({ message: "User not found" });
   }
+
+  // Check if the password is correct
+  const isMatch = await bcrypt.compare(password, user.password);
+
+  if (!isMatch) {
+    return res.status(400).json({ message: "Invalid credentials" });
+  }
+
+  res.json(user);
 };
+import { Request, Response } from "express";
 
 export const logout = (req: Request, res: Response) => {
-  try {
-    // Clear the token from local storage or wherever it's stored
-    // For example:
-    // localStorage.removeItem('token');
+  // Destroy the current session
+  req.session.destroy((err) => {
+    if (err) {
+      return res.status(500).json({ message: "Failed to log out" });
+    }
 
-    res.redirect('/login');
-  } catch (err: any) {
-    console.error(err.message);
-    res.status(500).send('Server error');
-  }
+    res.json({ message: "Logged out successfully" });
+  });
 };
-

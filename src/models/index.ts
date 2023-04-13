@@ -1,12 +1,15 @@
 // database.ts
-import { Sequelize } from 'sequelize';
+import { Sequelize } from 'sequelize-typescript';
 import config from '../config/config';
+import {User} from './user.model';
 
 const { dialect, host, username, password, database } = config.db;
 
-const sequelize = new Sequelize(database, username, password, {
+export const sequelize = new Sequelize({
+  database,  
   dialect,
-  host,
+  username,
+  password, 
+  models: [User],
 });
-
 export default sequelize;

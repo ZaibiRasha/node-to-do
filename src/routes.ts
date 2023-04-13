@@ -12,9 +12,9 @@ import authenticate from './middlewares/authenticate';
 
 const router = express.Router();
 
-router.get('/', (req: express.Request, res: express.Response) => {
-  res.send('Hello, World!');
-});
+// router.get('/', (req: express.Request, res: express.Response) => {
+//   res.send('Hello, World!');
+// });
 
 // Authentication routes
 router.post('/register',
