@@ -65,5 +65,11 @@ authApp .get('/logout', (req: Request, res: Response) => {
   });
 });
 
+authApp .get('/tasks',authenticate, (req: Request, res: Response) => {
+  // This route is protected by the authenticate middleware
+  // Only authenticated users can access this route
+  const user = (req.session as MySession).user;
+  res.send('/tasks');
+});
 
 export default authApp ;
