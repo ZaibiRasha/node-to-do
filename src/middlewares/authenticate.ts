@@ -37,10 +37,10 @@ authApp .get('/', authenticate, (req: Request, res: Response) => {
   res.send(`Hello, authenticated user ${user.username}!`);
 });
 
-authApp .get('/login', (req: Request, res: Response) => {
-  // Render the login page
-  res.render('login');
-});
+// authApp .get('/login', (req: Request, res: Response) => {
+//   // Render the login page
+//   res.render('login');
+// });
 
 authApp.post('/login', authenticate, (req: Request, res: Response, next: NextFunction) => {
   // Authenticate the user and set the session data
@@ -55,7 +55,7 @@ authApp.post('/login', authenticate, (req: Request, res: Response, next: NextFun
 });
 
 
-authApp .get('/logout', (req: Request, res: Response) => {
+authApp.get('/logout', (req: Request, res: Response) => {
   // Clear the session data and redirect to the login page
   req.session.destroy((err) => {
     if (err) {
