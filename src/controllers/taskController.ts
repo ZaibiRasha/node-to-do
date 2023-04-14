@@ -12,23 +12,24 @@ export const getTasks = async (req: Request, res: Response) => {
     res.json(tasks);
   } catch (err : any ) {
     console.error(err.message);
-    res.status(500).send('Server error');
+    res.status(500).send(err.message);
   }
 };
 
 export const createTask = async (req: Request, res: Response) => {
+  console.log(req.body);
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(422).json({ errors: errors.array() });
   }
 
-  const { name, description } = req.body;
+  const { title, description,completed } = req.body;
 
   try {
     const newTask = new Task({
-      name,
+      title,
       description,
-      user_id: req.user?.id,
+      completed
     });
 
     await newTask.save();
@@ -36,7 +37,7 @@ export const createTask = async (req: Request, res: Response) => {
     res.json(newTask);
   } catch (err : any ) {
     console.error(err.message);
-    res.status(500).send('Server error');
+    res.status(500).send(err.message);
   }
 };
 
