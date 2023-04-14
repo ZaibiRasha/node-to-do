@@ -1,40 +1,30 @@
-import { Model, DataTypes } from 'sequelize';
-import  sequelize  from '.';
+import { Table, Column, Model, DataType, AllowNull, PrimaryKey, AutoIncrement } from 'sequelize-typescript';
 
-class Todo extends Model {
-  public id!: number;
-  public title!: string;
-  public description!: string | null;
-  public done!: boolean;
-  public readonly createdAt!: Date;
-  public readonly updatedAt!: Date;
+@Table({ tableName: 'todos' })
+export class Todo extends Model {
+  @PrimaryKey
+  @AutoIncrement
+  @Column({
+    type: DataType.INTEGER,
+    allowNull: false,
+  })
+  id!: number;
+
+  @AllowNull(false)
+  @Column({
+    type : DataType.STRING
+  })  
+  title!: string;
+
+  @AllowNull(false)
+  @Column({
+    type : DataType.STRING
+  }) 
+  description!: string;
+  
+  @AllowNull(false)
+  @Column({
+    type : DataType.BOOLEAN
+  })
+  done!: boolean ;
 }
-
-Todo.init(
-  {
-    id: {
-      type: DataTypes.INTEGER.UNSIGNED,
-      autoIncrement: true,
-      primaryKey: true,
-    },
-    title: {
-      type: new DataTypes.STRING(128),
-      allowNull: false,
-    },
-    description: {
-      type: new DataTypes.STRING(256),
-      allowNull: true,
-    },
-    done: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
-      defaultValue: false,
-    },
-  },
-  {
-    tableName: 'todos',
-    sequelize,
-  }
-);
-
-export default Todo;

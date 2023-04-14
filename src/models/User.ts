@@ -1,7 +1,8 @@
 import { Table, Column, Model, DataType, AllowNull, PrimaryKey, AutoIncrement } from 'sequelize-typescript';
 
-@Table({ tableName: 'tasks' })
-export class Task extends Model {
+
+@Table({ tableName: 'users' })
+export class User extends Model {
   @PrimaryKey
   @AutoIncrement
   @Column({
@@ -14,17 +15,30 @@ export class Task extends Model {
   @Column({
     type : DataType.STRING
   })  
-  title!: string;
+  name!: string;
 
   @AllowNull(false)
   @Column({
     type : DataType.STRING
   }) 
-  description!: string;
+  email!: string;
   
   @AllowNull(false)
   @Column({
-    type : DataType.BOOLEAN
+    type : DataType.STRING
   })
-  completed!: boolean ;
+  password!: string ;
+  
+  @AllowNull(true)
+  @Column({
+    type: DataType.STRING,
+  })
+  resetToken!: string | null;
+
+  @AllowNull(true)
+  @Column({
+    type: DataType.DATE,
+  })  
+  resetTokenExpiresAt!: Date | null;
 }
+
