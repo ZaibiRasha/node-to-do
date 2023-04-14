@@ -1,5 +1,5 @@
 import { Request as ExpressRequest, Response } from 'express';
-import Task from '../models/Task';
+import {Task} from '../models/Task';
 import { validationResult } from 'express-validator';
 
 interface Request extends ExpressRequest {

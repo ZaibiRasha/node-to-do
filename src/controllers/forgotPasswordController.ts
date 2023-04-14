@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import {User}  from '../models/user.model';
+import {User}  from '../models/User';
 import { sendResetPasswordEmail } from '../utils/sendEmail';
 import crypto from 'crypto';
 
