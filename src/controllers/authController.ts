@@ -12,13 +12,12 @@ export const register = async (req: Request, res: Response) => {
   if (user) {
     return res.status(401).send({ message:"EMAIL_EXISTS"});
   }
-  const newUser =User.create({
+  User.create({
     name: name,
     email: email,
     password:password
   })
   return res.status(202).send({ message: `name : ${name} , email : ${email}` });
-
 } catch (error) {
   res.status(500).send({ success: false, message: "MSG.SQL_ERROR" });
 }
