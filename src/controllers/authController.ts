@@ -1,5 +1,7 @@
 import bcrypt from "bcrypt";
 import { User } from "../models/User";
+import { Request, Response } from "express";
+
 export const register = async (req: Request, res: Response) => {
   try {
   const { name, password, email} = req.body;
@@ -10,14 +12,17 @@ export const register = async (req: Request, res: Response) => {
   if (user) {
     return res.status(401).send({ message:"EMAIL_EXISTS"});
   }
-  User.create({
+  const newUser =User.create({
     name: name,
     email: email,
     password:password
   })
+  return res.status(202).send({ message: `name : ${name} , email : ${email}` });
+
 } catch (error) {
   res.status(500).send({ success: false, message: "MSG.SQL_ERROR" });
 }
+
 };
 
 export const login = async (req: Request, res: Response) => {
@@ -39,7 +44,7 @@ export const login = async (req: Request, res: Response) => {
 
   res.json(user);
 };
-import { Request, Response } from "express";
+
 
 export const logout = (req: Request, res: Response) => {
   // Destroy the current session
