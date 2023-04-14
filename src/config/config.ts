@@ -1,5 +1,7 @@
 import { Dialect } from 'sequelize';
+import * as dotenv from 'dotenv';
 
+dotenv.config();
 interface Config {
   db: {
     dialect: Dialect;
@@ -13,7 +15,7 @@ interface Config {
 const config: Config = {
   db: {
     host: process.env.DB_HOST?process.env.DB_HOST:"localhost",
-    database: process.env.DB_NAME?process.env.DB_NAME:"todo",
+    database: process.env.DB_NAME?process.env.DB_NAME:"todo2",
     username: process.env.DB_USER?process.env.DB_USER:"root",
     password: process.env.DB_PASS?process.env.DB_PASS:"",
     dialect: 'mysql',
