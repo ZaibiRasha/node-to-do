@@ -4,9 +4,10 @@ import * as dotenv from 'dotenv';
 dotenv.config();
 
 const sqlScripts = [
-    'ALTER TABLE `todos` CHANGE `complete` `done` TINYINT(1) NOT NULL;',
+    'ALTER TABLE `tasks` ADD `userId` INT NOT NULL AFTER `completed`;',
+    'ALTER TABLE `tasks` ADD CONSTRAINT FK_userId FOREIGN KEY (userId) REFERENCES users(id);'
   ];
-let i = parseInt(process.env.MIGRATION?process.env.MIGRATION:'0');
+let i = parseInt(process.env.MIGRATION!);
 
 // const migrations = (async () => {
 //   await sequelize.query("ALTER TABLE `todos` CHANGE `done` `complete` TINYINT(1) NOT NULL;")
