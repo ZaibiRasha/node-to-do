@@ -1,25 +1,22 @@
 import nodemailer from 'nodemailer';
-import dotenv from 'dotenv';
 
-dotenv.config();
+export const sendPasswordResetEmail = async (email: string, resetToken: string) => {
+  const transporter = nodemailer.createTransport({
+    host: process.env.SMTP_HOST,
+    port: parseInt(process.env.SMTP_PORT!, 10),
+    secure: false,
+    auth: {
+      user: process.env.SMTP_USER,
+      pass: process.env.SMTP_PASSWORD,
+    },
+  });
 
-const { EMAIL_USER, EMAIL_PASS } = process.env;
+  const resetUrl = `${process.env.APP_URL}/reset-password/${resetToken}`;
 
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: EMAIL_USER,
-    pass: EMAIL_PASS,
-  },
-});
-
-export const sendResetPasswordEmail = async (email: string, resetToken: string) => {
-  const mailOptions = {
-    from: EMAIL_USER,
-    to: email,
-    subject: 'Reset Password Link',
-    text: `Click on the link below to reset your password:\n\nhttp://localhost:3000/reset-password?token=${resetToken}`,
-  };
-
-  await transporter.sendMail(mailOptions);
+  await transporter.sendMail({
+    from: process.env.SMTP_FROM,
+    to: "rachazaibi27051997@gmail.com",
+    subject: 'Reset your password',
+    html: `Click <a href="${resetUrl}">here</a> to reset your password`,
+  });
 };

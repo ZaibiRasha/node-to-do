@@ -27,4 +27,11 @@ export class Task extends Model {
     type : DataType.BOOLEAN
   })
   completed!: boolean ;
+  
+  @AllowNull(false)
+  @Column({
+    type: DataType.INTEGER,
+  })
+  userId!: number;
+
 }

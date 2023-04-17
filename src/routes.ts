@@ -1,36 +1,22 @@
 import express from 'express';
-import { body } from 'express-validator';
-import {
-  register,
-  login,
-  logout,
-} from './controllers/authController';
-import {forgotPassword} from './controllers/forgotPasswordController';
-import { resetPassword } from './controllers/resetPasswordController';
-import { createTask, getTasks, updateTask, deleteTask } from './controllers/taskController';
-import authenticate from './middlewares/authenticate';
+import AuthController from './controllers/authController';
+import { authMiddleware } from './middlewares/authenticate';
+import  ForgotPasswordController  from './controllers/forgotPasswordController';
+import  ResetPasswordController  from './controllers/resetPasswordController';
+import taskController from './controllers/taskController';
 
 const router = express.Router();
+//auth
+router.post('/register', AuthController.register);
+router.post('/login', AuthController.login);
+router.post('/logout', authMiddleware, AuthController.logout);
+//rest password
+router.post('/forgot-password', ForgotPasswordController.initiatePasswordReset);
+router.post('/reset-password/:token', ResetPasswordController.sendResetEmail);
+//task  
+router.post('/tasks',authMiddleware,taskController.createTask);
+router.put('/tasks/:id/complete',authMiddleware,taskController.completeTask);
+router.delete('/tasks/:id',authMiddleware,taskController.deleteTask);
+router.get('/tasks',authMiddleware,taskController.indexTask);
 
-// router.get('/', (req: express.Request, res: express.Response) => {
-//   res.send('Hello, World!');
-// });
-
-// Authentication routes
-router.post('/register',
-  body('email').isEmail(),
-  body('password').isLength({ min: 6 }),
-  register);
-
-router.post('/login', login);
-router.post('/logout', authenticate, logout);
-router.post('/forgot-password', forgotPassword);
-router.post('/reset-password', resetPassword);
-
-// Task routes
-router.post('/tasks', authenticate, createTask);
-router.get('/tasks', authenticate, getTasks);
-router.patch('/tasks/:id', authenticate, updateTask);
-router.delete('/tasks/:id', authenticate, deleteTask);
-
-export { router };
+export default router;

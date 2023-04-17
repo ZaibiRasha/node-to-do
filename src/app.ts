@@ -2,10 +2,18 @@ import express from 'express';
 import  router  from './routes';
 // import authApp from './middlewares/authenticate'; // Import authApp instead of app
 import sequelize from './sequelize';
+import cors from 'cors';
+
+// enable CORS
+const corsOptions = {
+  origin: 'http://localhost:3000'
+};
+
+
 
 const app = express();
 const port = process.env.PORT;
-
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

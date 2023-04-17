@@ -1,12 +1,12 @@
 import { Request as ExpressRequest, Response } from 'express';
 import {Task} from '../models/Task';
-import { validationResult } from 'express-validator';
+import { User } from '../models/User';
 
 interface Request extends ExpressRequest {
   user?: { id: number };
 }
-
-export const getTasks = async (req: Request, res: Response) => {
+class TaskController {
+async getTasks  (req: Request, res: Response)  {
   try {
     const tasks = await Task.findAll({ where: { user_id: req.user?.id } });
     res.json(tasks);
@@ -16,73 +16,87 @@ export const getTasks = async (req: Request, res: Response) => {
   }
 };
 
-export const createTask = async (req: Request, res: Response) => {
-  console.log(req.body);
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(422).json({ errors: errors.array() });
-  }
-
-  const { title, description,completed } = req.body;
-
+async createTask  (req: Request, res: Response){
   try {
-    const newTask = new Task({
-      title,
-      description,
-      completed
+    // Get authenticated user's id
+    const userId = req.user?.id;
+    // Create new task object
+    const task = new Task({
+      title: req.body.title,
+      description: req.body.description,
+      completed: req.body.completed,
+      userId: userId // Assign authenticated user's id to the task
     });
 
-    await newTask.save();
-
-    res.json(newTask);
-  } catch (err : any ) {
-    console.error(err.message);
-    res.status(500).send(err.message);
-  }
-};
-
-export const updateTask = async (req: Request, res: Response) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(422).json({ errors: errors.array() });
-  }
-
-  const taskId = req.params.id;
-  const { title, description } = req.body;
-
-  try {
-    const task = await Task.findOne({ where: { id: taskId, user_id: req.user?.id } });
-    if (!task) {
-      return res.status(404).json({ errors: [{ msg: 'Task not found' }] });
-    }
-
-    task.title = title || task.title;
-    task.description = description || task.description;
-
+    // Save task to database
     await task.save();
 
-    res.json(task);
-  } catch (err : any ) {
-    console.error(err.message);
-    res.status(500).send('Server error');
+    res.status(201).send(task); // Return newly created task object
+  } catch (error : any) {
+    console.error(error.message);
+    res.status(500).send('Server Error');
   }
-};
+}
 
-export const deleteTask = async (req: Request, res: Response) => {
-  const { id } = req.params;
 
+async completeTask  (req: Request, res: Response) {
   try {
-    const task = await Task.findOne({ where: { id, user_id: req.user?.id } });
+    const task = await Task.findOne({
+      where: {
+        id: req.params.id,
+        userId: req.user?.id // ensure task belongs to authenticated user
+      }
+    });
 
     if (!task) {
-      return res.status(404).json({ msg: 'Task not found' });
+      return res.status(404).json({ message: 'Task not found' });
+    }
+
+    task.completed = true;
+    await task.save();
+
+    return res.json({ task });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Server error' });
+  }
+}
+
+async deleteTask   (req: Request, res: Response)  {
+  const { id } = req.params;
+  const userId = req.user?.id;
+console.log(id,userId)
+  try {
+    const task = await Task.findOne({ where: { id: id, userId : userId } });
+
+    if (!task) {
+      return res.status(404).send('Task not found');
     }
 
     await task.destroy();
 
-    res.json({ msg: 'Task deleted' });
-  } catch (err : any ) {
-    console.error(err.message);
-    res.status(500).send('Server error');
+    res.status(204).send(`task id : ${id} is deletetd `);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Internal server error');
   }
-};
+}
+async  indexTask (req: Request, res: Response)  {
+  try {
+    // Find the authenticated user
+    const authenticatedUser = req.user;
+    // Find all tasks of the authenticated user
+    const tasks = await Task.findAll({
+      where: { userId: authenticatedUser?.id },
+      // include: [{ model: User,as: 'user' }],
+    });
+
+    // Send the tasks as a response
+    res.json(tasks);
+  } catch (error : any) {
+    console.error(error.message);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+}
+}
+export default new TaskController();
