@@ -15,7 +15,7 @@ export const sendPasswordResetEmail = async (email: string, resetToken: string) 
 
   await transporter.sendMail({
     from: process.env.SMTP_FROM,
-    to: "rachazaibi27051997@gmail.com",
+    to: process.env.SMTP_TO,
     subject: 'Reset your password',
     html: `Click <a href="${resetUrl}">here</a> to reset your password`,
   });
