@@ -13,23 +13,18 @@ export const authMiddleware = async (
   next: NextFunction
 ) => {
   try {
-    const authHeader = req.rawHeaders[5];
-    const token = authHeader?.split(' ')[1];
+    const token = req.header('Authorization')?.replace?.('Bearer ', '');
     if (!token) {
       return res.status(401).json({ message: 'Unauthorized 1' });
     }
     const decodedToken: any = jwt.verify(token, process.env.JWT_SECRET!);
     const userId : number = decodedToken.userId;
-    console.log(userId);
-
     const user = await User.findOne({ where: { id: userId } });
-    if (!user) {
-      return res.status(401).json({ message: 'Unauthorized 2' });
-    }
+    if (!user) throw new Error('Unauthorized 2');
     req.user = user;
     next();
-  } catch (error : any) {
+  } catch (error: any ) {
     console.error(error.message);
-    return res.status(401).json({ message:  'Unauthorized 3' });
+    return res.status(401).json({ message: 'Unauthorized 3' });
   }
 };
